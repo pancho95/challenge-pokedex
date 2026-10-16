@@ -10,10 +10,8 @@ export default function AppRoutes() {
     <Provider store={store}>
       <BrowserRouter>
         <Navbar />
-
         <Routes>
           <Route path="/" element={<Home />} />
-
           <Route path="/pokemon/:idPokemon" element={<Detail />} />
           <Route
             path="*"

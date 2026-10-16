@@ -1,0 +1,52 @@
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import { baseApi } from "../services/baseApi";
+import pokemonReducer from "../features/pokemon/pokemonSlice";
+
+// 💡 Solución para Vite: Creamos un storage compatible que envuelve el localStorage nativo
+const storage = {
+  getItem: (key) => {
+    return Promise.resolve(localStorage.getItem(key));
+  },
+  setItem: (key, value) => {
+    return Promise.resolve(localStorage.setItem(key, value));
+  },
+  removeItem: (key) => {
+    return Promise.resolve(localStorage.removeItem(key));
+  },
+};
+
+const persistConfig = {
+  key: "root",
+  version: 1,
+  storage, // Usamos nuestro storage seguro
+  whitelist: ["favorites", baseApi.reducerPath],
+};
+
+const rootReducer = combineReducers({
+  [baseApi.reducerPath]: baseApi.reducer,
+  favorites: pokemonReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(baseApi.middleware),
+});
+
+export const persistor = persistStore(store);

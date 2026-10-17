@@ -1,233 +1,278 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetPokemonDetailQuery } from "../services/pokemonDetailApi";
 import { addToTeam, removeFromTeam } from "../features/pokemon/pokemonSlice";
+import {
+  TYPE_COLORS,
+  TYPE_NAMES,
+  STAT_NAMES,
+  SPRITE_NAMES,
+} from "../utils/pokemonColors";
+import {
+  DetailPage,
+  BackButton,
+  DetailCard,
+  TopBar,
+  PokemonNumber,
+  TeamButton,
+  HeroSection,
+  ImageStage,
+  MainImage,
+  PokemonName,
+  PokemonSubtitle,
+  TypesContainer,
+  TypeBadge,
+  Section,
+  SpriteGallery,
+  SpriteOption,
+  PhysicalInfoGrid,
+  PhysicalItem,
+  InfoIcon,
+  InfoLabel,
+  AbilitiesList,
+  AbilityBadge,
+  HiddenBadge,
+  StatsSection,
+  SectionHeading,
+  StatsTotal,
+  StatsList,
+  StatRow,
+  StatLabels,
+  StatTrack,
+  StatFill,
+  StatusContainer,
+  Loader,
+} from "./Detail.styles";
 
 export default function Detail() {
-  const { idPokemon } = useParams();
+  const { idPokemon, id } = useParams();
+  const pokemonParam = idPokemon || id;
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const team = useSelector((state) => state.favorites.team);
+
+  const [selectedSprite, setSelectedSprite] = useState("artwork");
 
   const {
     data: pokemon,
     isLoading,
     error,
-  } = useGetPokemonDetailQuery(idPokemon, {
-    skip: !idPokemon,
+  } = useGetPokemonDetailQuery(pokemonParam, {
+    skip: !pokemonParam,
   });
 
-  const dispatch = useDispatch();
-  const team = useSelector((state) => state.favorites.team);
-
-  if (!idPokemon || isLoading)
+  if (!pokemonParam || isLoading) {
     return (
-      <div style={{ textAlign: "center", padding: "40px" }}>
+      <StatusContainer>
+        <Loader />
         Cargando detalles del Pokémon...
-      </div>
+      </StatusContainer>
     );
-  if (error || !pokemon)
+  }
+
+  if (error || !pokemon) {
     return (
-      <div style={{ textAlign: "center", padding: "40px" }}>
-        No se pudo encontrar el Pokémon.
-      </div>
+      <StatusContainer>
+        <BackButton $inStatus onClick={() => navigate(-1)}>
+          ← Volver al listado
+        </BackButton>
+        <p>No se pudo encontrar el Pokémon.</p>
+      </StatusContainer>
     );
+  }
 
   const pokemonId = pokemon.id;
   const isFavorite = team.some((p) => p.id === pokemonId);
-  const sprite =
-    pokemon.sprites.other?.["official-artwork"]?.front_default ||
-    pokemon.sprites.front_default;
+
+  const primaryType = pokemon.types?.[0]?.type?.name || "normal";
+  const accent = TYPE_COLORS[primaryType] || TYPE_COLORS.normal;
+
+  const sprites = {
+    artwork:
+      pokemon.sprites.other?.["official-artwork"]?.front_default ||
+      pokemon.sprites.front_default,
+    front: pokemon.sprites.front_default,
+    back: pokemon.sprites.back_default,
+    shiny: pokemon.sprites.front_shiny,
+    shinyBack: pokemon.sprites.back_shiny,
+  };
+
+  const availableSprites = Object.entries(sprites).filter(([, url]) =>
+    Boolean(url),
+  );
+
+  const activeSprite = sprites[selectedSprite] || sprites.artwork;
 
   const handleToggleTeam = () => {
     if (isFavorite) {
       dispatch(removeFromTeam(pokemonId));
-    } else {
-      if (team.length >= 6) {
-        alert(
-          "¡Tu equipo ya tiene 6 Pokémon! Debes liberar uno antes de agregar otro.",
-        );
-        return;
-      }
-      dispatch(
-        addToTeam({
-          id: pokemon.id,
-          name: pokemon.name,
-          sprite: sprite,
-          types: pokemon.types.map((t) => t.type.name),
-        }),
-      );
+      return;
     }
+
+    if (team.length >= 6) {
+      alert(
+        "¡Tu equipo ya tiene 6 Pokémon! Debes liberar uno antes de agregar otro.",
+      );
+      return;
+    }
+
+    dispatch(
+      addToTeam({
+        id: pokemon.id,
+        name: pokemon.name,
+        sprite: sprites.artwork,
+        types: pokemon.types.map((t) => t.type.name),
+      }),
+    );
   };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        margin: "auto",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          marginBottom: "20px",
-          padding: "8px 16px",
-          cursor: "pointer",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-          background: "#f9f9f9",
-        }}
-      >
-        ← Volver
-      </button>
+    <DetailPage $accent={accent}>
+      <BackButton onClick={() => navigate(-1)} type="button">
+        <span aria-hidden="true">←</span> Volver al listado
+      </BackButton>
 
-      <div
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: "12px",
-          padding: "24px",
-          textAlign: "center",
-          background: "#fff",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span
-            style={{ color: "#888", fontSize: "1.2rem", fontWeight: "bold" }}
-          >
-            #{String(pokemonId).padStart(3, "0")}
-          </span>
-          <button
+      <DetailCard>
+        <TopBar>
+          <PokemonNumber>#{String(pokemonId).padStart(3, "0")}</PokemonNumber>
+
+          <TeamButton
+            $isFavorite={isFavorite}
             onClick={handleToggleTeam}
-            style={{
-              background: isFavorite ? "#ff4d4d" : "#fff",
-              color: isFavorite ? "#fff" : "#333",
-              border: "1px solid #ccc",
-              borderRadius: "20px",
-              padding: "6px 14px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
+            type="button"
+            aria-pressed={isFavorite}
           >
-            {isFavorite ? "❤️ En mi equipo" : "🤍 Agregar a mi equipo"}
-          </button>
-        </div>
+            <span>{isFavorite ? "♥" : "♡"}</span>
+            {isFavorite ? "En mi equipo" : "Agregar a mi equipo"}
+          </TeamButton>
+        </TopBar>
 
-        <div style={{ margin: "20px 0" }}>
-          <img
-            src={sprite}
-            alt={pokemon.name}
-            style={{ width: "200px", height: "200px", objectFit: "contain" }}
-          />
-        </div>
+        <HeroSection>
+          <ImageStage>
+            {activeSprite ? (
+              <MainImage
+                src={activeSprite}
+                alt={`${pokemon.name} ${SPRITE_NAMES[selectedSprite] || ""}`}
+              />
+            ) : (
+              <p>Imagen no disponible</p>
+            )}
+          </ImageStage>
 
-        <h1
-          style={{
-            textTransform: "capitalize",
-            margin: "10px 0",
-            fontSize: "2rem",
-          }}
-        >
-          {pokemon.name}
-        </h1>
+          <PokemonName>{pokemon.name}</PokemonName>
+          <PokemonSubtitle>
+            Pokémon #{String(pokemonId).padStart(3, "0")}
+          </PokemonSubtitle>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            justifyContent: "center",
-            marginBottom: "20px",
-          }}
-        >
-          {pokemon.types.map((t) => (
-            <span
-              key={t.type.name}
-              style={{
-                padding: "6px 16px",
-                borderRadius: "20px",
-                fontSize: "0.9rem",
-                background: "#e0e0e0",
-                textTransform: "capitalize",
-                fontWeight: "bold",
-              }}
-            >
-              {t.type.name}
-            </span>
-          ))}
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            background: "#f7f7f7",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "20px",
-          }}
-        >
-          <div>
-            <strong>Altura:</strong> {pokemon.height / 10} m
-          </div>
-          <div>
-            <strong>Peso:</strong> {pokemon.weight / 10} kg
-          </div>
-        </div>
-
-        <div style={{ textAlign: "left" }}>
-          <h3 style={{ borderBottom: "1px solid #eee", paddingBottom: "8px" }}>
-            Estadísticas Base
-          </h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {pokemon.stats.map((s) => (
-              <li
-                key={s.stat.name}
-                style={{
-                  margin: "8px 0",
-                  textTransform: "capitalize",
-                  fontSize: "0.95rem",
-                }}
+          <TypesContainer>
+            {pokemon.types.map(({ type }) => (
+              <TypeBadge
+                key={type.name}
+                $bgColor={TYPE_COLORS[type.name] || TYPE_COLORS.normal}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "4px",
-                  }}
-                >
-                  <span>{s.stat.name.replace("-", " ")}</span>
-                  <strong>{s.base_stat}</strong>
-                </div>
-                <div
-                  style={{
-                    background: "#eee",
-                    borderRadius: "4px",
-                    height: "8px",
-                    width: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      background: "#4caf50",
-                      width: `${Math.min(s.base_stat, 100)}%`,
-                      height: "100%",
-                    }}
-                  />
-                </div>
-              </li>
+                {TYPE_NAMES[type.name] || type.name}
+              </TypeBadge>
             ))}
-          </ul>
-        </div>
-      </div>
-    </div>
+          </TypesContainer>
+        </HeroSection>
+
+        {availableSprites.length > 1 && (
+          <Section>
+            <h2>Galería de sprites</h2>
+            <SpriteGallery>
+              {availableSprites.map(([key, url]) => (
+                <SpriteOption
+                  type="button"
+                  $isSelected={selectedSprite === key}
+                  key={key}
+                  onClick={() => setSelectedSprite(key)}
+                  aria-pressed={selectedSprite === key}
+                  title={SPRITE_NAMES[key]}
+                >
+                  <img src={url} alt="" />
+                  <span>{SPRITE_NAMES[key]}</span>
+                </SpriteOption>
+              ))}
+            </SpriteGallery>
+          </Section>
+        )}
+
+        <PhysicalInfoGrid>
+          <PhysicalItem>
+            <InfoIcon>↕</InfoIcon>
+            <div>
+              <InfoLabel>Altura</InfoLabel>
+              <strong>{pokemon.height / 10} m</strong>
+            </div>
+          </PhysicalItem>
+
+          <PhysicalItem>
+            <InfoIcon>⚖</InfoIcon>
+            <div>
+              <InfoLabel>Peso</InfoLabel>
+              <strong>{pokemon.weight / 10} kg</strong>
+            </div>
+          </PhysicalItem>
+
+          <PhysicalItem>
+            <InfoIcon>✦</InfoIcon>
+            <div>
+              <InfoLabel>Experiencia base</InfoLabel>
+              <strong>{pokemon.base_experience ?? "—"} XP</strong>
+            </div>
+          </PhysicalItem>
+        </PhysicalInfoGrid>
+
+        <Section>
+          <h2>Habilidades</h2>
+          <AbilitiesList>
+            {pokemon.abilities.map(({ ability, is_hidden }) => (
+              <AbilityBadge key={ability.name}>
+                {ability.name.replaceAll("-", " ")}
+                {is_hidden && <HiddenBadge>Oculta</HiddenBadge>}
+              </AbilityBadge>
+            ))}
+          </AbilitiesList>
+        </Section>
+
+        <StatsSection>
+          <SectionHeading>
+            <div>
+              <h2>Estadísticas base</h2>
+              <p>Distribución de atributos del Pokémon</p>
+            </div>
+            <StatsTotal>
+              {pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0)}
+              <small> TOTAL</small>
+            </StatsTotal>
+          </SectionHeading>
+
+          <StatsList>
+            {pokemon.stats.map(({ stat, base_stat }) => (
+              <StatRow key={stat.name}>
+                <StatLabels>
+                  <span>{STAT_NAMES[stat.name] || stat.name}</span>
+                  <strong>{base_stat}</strong>
+                </StatLabels>
+
+                <StatTrack
+                  role="progressbar"
+                  aria-label={STAT_NAMES[stat.name] || stat.name}
+                  aria-valuenow={base_stat}
+                  aria-valuemin={0}
+                  aria-valuemax={255}
+                >
+                  <StatFill
+                    $fillPercentage={Math.min((base_stat / 255) * 100, 100)}
+                  />
+                </StatTrack>
+              </StatRow>
+            ))}
+          </StatsList>
+        </StatsSection>
+      </DetailCard>
+    </DetailPage>
   );
 }

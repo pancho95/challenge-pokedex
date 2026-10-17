@@ -5,6 +5,7 @@ export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_POKEMON_API_ENDPOINT,
   }),
+  keepUnusedDataFor: 300,
   tagTypes: ["Pokemon", "Type"],
   endpoints: () => ({}),
 });

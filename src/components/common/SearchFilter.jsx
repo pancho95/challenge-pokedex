@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import styled from "styled-components";
 import { TYPE_COLORS } from "../../utils/pokemonColors";
 import { GENERATIONS } from "../../utils/pokemonGenerations";
+import {
+  FilterContainer,
+  OptionFilter,
+  SearchInput,
+  Select,
+  SelectGroup,
+  ClearButton,
+} from "./Search.styles";
 
 export default function SearchFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -100,71 +107,3 @@ export default function SearchFilter() {
     </FilterContainer>
   );
 }
-
-const FilterContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  max-width: 800px;
-  margin: 0 auto 24px auto;
-  padding: 0 16px;
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  font-size: 1rem;
-  outline: none;
-  background: #fff;
-  transition: border-color 0.2s;
-  color: #252936;
-
-  &:focus {
-    border-color: #4caf50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
-  }
-`;
-
-const SelectGroup = styled.div`
-  display: flex;
-  gap: 12px;
-`;
-
-const OptionFilter = styled.option`
-  color: black;
-`;
-
-const Select = styled.select`
-  flex: 1;
-  min-width: 250px;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  background: #fff;
-  color: #252936;
-  outline: none;
-  cursor: pointer;
-  text-transform: capitalize;
-
-  &:focus {
-    border-color: #4caf50;
-  }
-`;
-
-const ClearButton = styled.button`
-  padding: 10px 16px;
-  border: 1px solid #ff4d4d;
-  border-radius: 10px;
-  background: #fff;
-  color: #ff4d4d;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-
-  &:hover {
-    background: #ff4d4d;
-    color: #fff;
-  }
-`;

@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useGetPokemonsQuery } from "../services/pokemonListApi";
-import { addToTeam, removeFromTeam } from "../features/pokemon/pokemonSlice";
-import Toast from "../components/common/Toast";
+import { useGetPokemonsQuery } from "../../services/pokemonListApi";
+import { addToTeam, removeFromTeam } from "../../features/pokemon/pokemonSlice";
+import Toast from "../../components/common/Toast/Toast";
 import {
   ComparePage,
   HeaderSection,
@@ -22,7 +22,7 @@ import {
 import {
   SpinnerWrapper,
   PokeballIcon,
-} from "../components/common/PokeballSpinner.styles";
+} from "../../components/common/PokeballSpinner.styles";
 
 const STAT_LABELS = {
   hp: "PS (HP)",

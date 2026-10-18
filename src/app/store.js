@@ -12,7 +12,6 @@ import {
 import { baseApi } from "../services/baseApi";
 import pokemonReducer from "../features/pokemon/pokemonSlice";
 
-// 💡 Solución para Vite: Creamos un storage compatible que envuelve el localStorage nativo
 const storage = {
   getItem: (key) => {
     return Promise.resolve(localStorage.getItem(key));
@@ -28,7 +27,7 @@ const storage = {
 const persistConfig = {
   key: "root",
   version: 1,
-  storage, // Usamos nuestro storage seguro
+  storage,
   whitelist: ["favorites", baseApi.reducerPath],
 };
 

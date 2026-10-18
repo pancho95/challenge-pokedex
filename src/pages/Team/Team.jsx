@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { removeFromTeam, reorderTeam } from "../features/pokemon/pokemonSlice";
-import { TYPE_COLORS, TYPE_NAMES } from "../utils/pokemonColors";
+import {
+  removeFromTeam,
+  reorderTeam,
+} from "../../features/pokemon/pokemonSlice";
+import { TYPE_COLORS, TYPE_NAMES } from "../../utils/pokemonColors";
 import {
   TeamPage,
   HeaderSection,

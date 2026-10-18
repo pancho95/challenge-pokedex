@@ -14,7 +14,7 @@ import {
   TypesContainer,
   TypeBadge,
 } from "./PokemonCard.styles";
-import Toast from "../common/Toast";
+import Toast from "../common/Toast/Toast";
 
 export default function PokemonCard({
   pokemonId,

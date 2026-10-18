@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { TYPE_COLORS } from "../../utils/pokemonColors";
-import { GENERATIONS } from "../../utils/pokemonGenerations";
+import { TYPE_COLORS } from "../../../utils/pokemonColors";
+import { GENERATIONS } from "../../../utils/pokemonGenerations";
 import {
   FilterContainer,
   OptionFilter,

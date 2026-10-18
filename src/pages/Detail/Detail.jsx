@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetPokemonDetailQuery } from "../services/pokemonDetailApi";
-import { addToTeam, removeFromTeam } from "../features/pokemon/pokemonSlice";
+import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
+import { addToTeam, removeFromTeam } from "../../features/pokemon/pokemonSlice";
 import {
   TYPE_COLORS,
   TYPE_NAMES,
   STAT_NAMES,
   SPRITE_NAMES,
-} from "../utils/pokemonColors";
+} from "../../utils/pokemonColors";
 import {
   DetailPage,
   BackButton,
@@ -44,7 +44,7 @@ import {
   StatusContainer,
   Loader,
 } from "./Detail.styles";
-import Toast from "../components/common/Toast";
+import Toast from "../../components/common/Toast/Toast";
 
 export default function Detail() {
   const { idPokemon, id } = useParams();

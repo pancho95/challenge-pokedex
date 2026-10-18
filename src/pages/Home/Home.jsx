@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import PokemonCard from "../components/list/PokemonCard";
-import SearchFilter from "../components/common/SearchFilter";
-import { PokemonGrid } from "../components/common/Grid";
+import PokemonCard from "../../components/PokemonCard/PokemonCard";
+import SearchFilter from "../../components/common/Search/SearchFilter";
+import { PokemonGrid } from "../../components/common/Grid";
 import {
   SpinnerWrapper,
   PokeballIcon,
-} from "../components/common/PokeballSpinner.styles";
-import { usePokemonFilter } from "../hooks/usePokemonFilter";
+} from "../../components/common/PokeballSpinner.styles";
+import { usePokemonFilter } from "../../hooks/usePokemonFilter";
 import { HomePage } from "./Home.styles";
 
 export default function Home() {

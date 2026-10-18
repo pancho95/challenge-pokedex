@@ -9,19 +9,14 @@ export const pokemonSlice = createSlice({
   initialState,
   reducers: {
     addToTeam: (state, action) => {
-      const pokemon = action.payload;
-      const exists = state.team.some((p) => p.id === pokemon.id);
-
+      const exists = state.team.some((p) => p.id === action.payload.id);
       if (!exists && state.team.length < 6) {
-        state.team.push(pokemon);
+        state.team.push(action.payload);
       }
     },
-
     removeFromTeam: (state, action) => {
-      const pokemonId = action.payload;
-      state.team = state.team.filter((p) => p.id !== pokemonId);
+      state.team = state.team.filter((p) => p.id !== action.payload);
     },
-
     reorderTeam: (state, action) => {
       state.team = action.payload;
     },
@@ -29,5 +24,4 @@ export const pokemonSlice = createSlice({
 });
 
 export const { addToTeam, removeFromTeam, reorderTeam } = pokemonSlice.actions;
-
 export default pokemonSlice.reducer;

@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import { Provider } from "react-redux";
 import { store } from "../app/store";
 import Detail from "../pages/Detail";
+import Team from "../pages/Team";
+import Compare from "../pages/Compare";
 
 export default function AppRoutes() {
   return (
@@ -13,6 +15,8 @@ export default function AppRoutes() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/pokemon/:idPokemon" element={<Detail />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/compare" element={<Compare />} />
           <Route
             path="*"
             element={

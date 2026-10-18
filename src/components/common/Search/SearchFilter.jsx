@@ -21,16 +21,28 @@ export default function SearchFilter() {
   const selectedGen = searchParams.get("gen") || "";
 
   useEffect(() => {
+    const currentSearch = searchParams.get("search") || "";
+    setSearchTerm((prev) => (currentSearch !== prev ? currentSearch : prev));
+  }, [searchParams]);
+
+  useEffect(() => {
     const handler = setTimeout(() => {
-      setSearchParams((prev) => {
-        const newParams = new URLSearchParams(prev);
-        if (searchTerm.trim()) {
-          newParams.set("search", searchTerm.trim().toLowerCase());
-        } else {
-          newParams.delete("search");
-        }
-        return newParams;
-      });
+      setSearchParams(
+        (prev) => {
+          const newParams = new URLSearchParams(prev);
+          const queryValue = searchTerm.trim().toLowerCase();
+
+          if (queryValue) {
+            if (newParams.get("search") !== queryValue) {
+              newParams.set("search", queryValue);
+            }
+          } else {
+            newParams.delete("search");
+          }
+          return newParams;
+        },
+        { replace: true },
+      );
     }, 300);
 
     return () => clearTimeout(handler);
@@ -38,27 +50,33 @@ export default function SearchFilter() {
 
   const handleTypeChange = (e) => {
     const val = e.target.value;
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      if (val) newParams.set("type", val);
-      else newParams.delete("type");
-      return newParams;
-    });
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        if (val) newParams.set("type", val);
+        else newParams.delete("type");
+        return newParams;
+      },
+      { replace: true },
+    );
   };
 
   const handleGenChange = (e) => {
     const val = e.target.value;
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      if (val) newParams.set("gen", val);
-      else newParams.delete("gen");
-      return newParams;
-    });
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        if (val) newParams.set("gen", val);
+        else newParams.delete("gen");
+        return newParams;
+      },
+      { replace: true },
+    );
   };
 
   const handleClearFilters = () => {
     setSearchTerm("");
-    setSearchParams({});
+    setSearchParams({}, { replace: true });
   };
 
   return (
@@ -66,7 +84,7 @@ export default function SearchFilter() {
       <SearchInput
         type="text"
         id="searchPokemon"
-        placeholder="Buscar Pokémon"
+        placeholder="Buscar Pokémon por nombre o ID"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />

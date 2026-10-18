@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
 import { addToTeam, removeFromTeam } from "../../features/pokemon/pokemonSlice";
+import { TYPE_COLORS, TYPE_NAMES } from "../../utils/pokemonColors";
 import {
   CardWrapper,
   FavoriteButton,
@@ -36,6 +38,14 @@ export default function PokemonCard({
   const dispatch = useDispatch();
   const team = useSelector((state) => state.favorites.team);
 
+  const { data: detail } = useGetPokemonDetailQuery(pokemonId, {
+    skip: !pokemonId || (pokemonTypes && pokemonTypes.length > 0),
+  });
+  const resolvedTypes =
+    pokemonTypes && pokemonTypes.length > 0
+      ? pokemonTypes
+      : detail?.types?.map((t) => t.type.name) || [];
+
   const isFavorite = team.some((p) => p.id === Number(pokemonId));
 
   if (!pokemonId) return null;
@@ -67,7 +77,7 @@ export default function PokemonCard({
         id: Number(pokemonId),
         name: pokemonBasicName,
         sprite: pokemonSprite,
-        types: pokemonTypes,
+        types: resolvedTypes,
       }),
     );
     setToastInfo({
@@ -129,11 +139,15 @@ export default function PokemonCard({
 
             <PokemonName>{pokemonBasicName}</PokemonName>
 
-            {pokemonTypes.length > 0 && (
+            {resolvedTypes.length > 0 && (
               <TypesContainer>
-                {pokemonTypes.map((typeName) => (
-                  <TypeBadge key={typeName} $typeName={typeName}>
-                    {typeName}
+                {resolvedTypes.map((typeName) => (
+                  <TypeBadge
+                    key={typeName}
+                    $typeName={typeName}
+                    $bgColor={TYPE_COLORS[typeName] || TYPE_COLORS.normal}
+                  >
+                    {TYPE_NAMES[typeName] || typeName}
                   </TypeBadge>
                 ))}
               </TypesContainer>

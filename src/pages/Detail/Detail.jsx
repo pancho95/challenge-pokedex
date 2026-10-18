@@ -130,14 +130,15 @@ export default function Detail() {
       return;
     }
 
-    dispatch(
-      addToTeam({
-        id: Number(pokemonId),
-        name: pokemon.name,
-        sprite: pokemon.sprite,
-        types: pokemon.types,
-      }),
-    );
+    const normalizedPokemonPayload = {
+      id: Number(pokemonId),
+      name: pokemon.name,
+      sprite: activeSprite,
+      types: pokemon.types.map((t) => t.type.name),
+    };
+
+    dispatch(addToTeam(normalizedPokemonPayload));
+
     setToastInfo({
       message: `¡${pokemon.name} se unió a tu equipo!`,
       type: "success",

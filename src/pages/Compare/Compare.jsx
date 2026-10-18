@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useGetPokemonsQuery } from "../../services/pokemonListApi";
-import { addToTeam, removeFromTeam } from "../../features/pokemon/pokemonSlice";
+import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
 import Toast from "../../components/common/Toast/Toast";
 import {
   ComparePage,
@@ -15,7 +14,6 @@ import {
   SubmitButton,
   ComparisonContainer,
   PokemonOverviewGrid,
-  OverviewCard,
   StatBarGroup,
   StatFill,
 } from "./Compare.styles";
@@ -35,16 +33,31 @@ const STAT_LABELS = {
 };
 
 export default function Compare() {
-  const dispatch = useDispatch();
-  const team = useSelector((state) => state.favorites.team);
-
-  const [comparedData, setComparedData] = useState(null);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [toastInfo, setToastInfo] = useState(null);
+
+  const [activeQuery1, setActiveQuery1] = useState("");
+  const [activeQuery2, setActiveQuery2] = useState("");
 
   const { data: pokemonList } = useGetPokemonsQuery({ limit: 1000, offset: 0 });
   const validNames =
     pokemonList?.results?.map((p) => p.name.toLowerCase()) || [];
+
+  const { data: res1, isFetching: loading1 } = useGetPokemonDetailQuery(
+    activeQuery1,
+    {
+      skip: !activeQuery1,
+    },
+  );
+
+  const { data: res2, isFetching: loading2 } = useGetPokemonDetailQuery(
+    activeQuery2,
+    {
+      skip: !activeQuery2,
+    },
+  );
+
+  const isLoadingDetails =
+    (Boolean(activeQuery1) && loading1) || (Boolean(activeQuery2) && loading2);
 
   const CompareSchema = Yup.object().shape({
     pokemon1: Yup.string()
@@ -71,22 +84,17 @@ export default function Compare() {
     },
     validationSchema: CompareSchema,
     enableReinitialize: true,
-    onSubmit: async (values) => {
-      setIsLoadingDetails(true);
-      try {
-        const p1Name = values.pokemon1.trim().toLowerCase();
-        const p2Name = values.pokemon2.trim().toLowerCase();
+    onSubmit: (values) => {
+      setActiveQuery1(values.pokemon1.trim().toLowerCase());
+      setActiveQuery2(values.pokemon2.trim().toLowerCase());
+    },
+  });
 
-        const [res1, res2] = await Promise.all([
-          fetch(`https://pokeapi.co/api/v2/pokemon/${p1Name}`).then((r) =>
-            r.json(),
-          ),
-          fetch(`https://pokeapi.co/api/v2/pokemon/${p2Name}`).then((r) =>
-            r.json(),
-          ),
-        ]);
+  const options = pokemonList?.results || [];
 
-        setComparedData({
+  const comparedData =
+    res1 && res2
+      ? {
           p1: {
             id: res1.id,
             name: res1.name,
@@ -111,51 +119,8 @@ export default function Compare() {
               {},
             ),
           },
-        });
-      } catch (error) {
-        console.error("Error al obtener detalles para comparar", error);
-      } finally {
-        setIsLoadingDetails(false);
-      }
-    },
-  });
-
-  const options = pokemonList?.results || [];
-
-  const handleToggleTeam = (pokemon) => {
-    const isFavorite = team.some((p) => p.id === pokemon.id);
-
-    if (isFavorite) {
-      dispatch(removeFromTeam(pokemon.id));
-      setToastInfo({
-        message: `${pokemon.name} ha sido eliminado de tu equipo.`,
-        type: "success",
-      });
-      return;
-    }
-
-    if (team.length >= 6) {
-      setToastInfo({
-        message:
-          "¡Tu equipo ya tiene 6 Pokémon! Debes liberar uno antes de agregar otro.",
-        type: "error",
-      });
-      return;
-    }
-
-    dispatch(
-      addToTeam({
-        id: pokemon.id,
-        name: pokemon.name,
-        sprite: pokemon.sprite,
-        types: pokemon.types,
-      }),
-    );
-    setToastInfo({
-      message: `¡${pokemon.name} se unió a tu equipo!`,
-      type: "success",
-    });
-  };
+        }
+      : null;
 
   return (
     <ComparePage>

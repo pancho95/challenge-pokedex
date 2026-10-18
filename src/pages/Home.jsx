@@ -7,6 +7,7 @@ import {
   PokeballIcon,
 } from "../components/common/PokeballSpinner.styles";
 import { usePokemonFilter } from "../hooks/usePokemonFilter";
+import { HomePage } from "./Home.styles";
 
 export default function Home() {
   const [offset, setOffset] = useState(0);
@@ -62,13 +63,18 @@ export default function Home() {
   }
 
   return (
-    <>
-      <h1 style={{ textAlign: "center", margin: "20px 0" }}>
+    <HomePage>
+      <h1
+        style={{
+          fontSize: "clamp(24px, 4vw, 36px)",
+          margin: "0 0 20px 0",
+          fontWeight: 800,
+        }}
+      >
         Listado de Pokémon
       </h1>
 
       <SearchFilter />
-
       <PokemonGrid>
         {pokemons?.map((pokemon) => (
           <PokemonCard
@@ -80,13 +86,11 @@ export default function Home() {
           />
         ))}
       </PokemonGrid>
-
       {pokemons?.length === 0 && !isFetching && (
         <p style={{ textAlign: "center", padding: "40px", color: "#777" }}>
           No se encontraron Pokémon con los filtros especificados.
         </p>
       )}
-
       <div style={{ minHeight: "70px", margin: "24px 0", textAlign: "center" }}>
         {isFetching && (
           <SpinnerWrapper>
@@ -101,10 +105,9 @@ export default function Home() {
           </p>
         )}
       </div>
-
       {!isFiltered && (
         <div ref={loadMoreRef} style={{ height: "20px", width: "100%" }} />
       )}
-    </>
+    </HomePage>
   );
 }

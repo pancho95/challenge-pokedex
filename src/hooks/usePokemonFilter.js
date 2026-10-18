@@ -18,20 +18,31 @@ export function usePokemonFilter(offset, limit, setOffset) {
 
   const isSearching = Boolean(searchQuery);
 
-  let activeQuery;
+  const searchResult = useGetPokemonsQuery(
+    { limit: 1302, offset: 0 },
+    { skip: !isSearching },
+  );
 
-  if (isSearching) {
-    activeQuery = useGetPokemonsQuery(
-      { limit: 1302, offset: 0 },
-      { skip: false },
-    );
-  } else if (genQuery) {
-    activeQuery = useGetPokemonsByGenQuery(genQuery, { skip: false });
-  } else if (typeQuery) {
-    activeQuery = useGetPokemonsByTypeQuery(typeQuery, { skip: false });
-  } else {
-    activeQuery = useGetPokemonsQuery({ limit, offset }, { skip: false });
-  }
+  const genResult = useGetPokemonsByGenQuery(genQuery, {
+    skip: isSearching || !genQuery,
+  });
+
+  const typeResult = useGetPokemonsByTypeQuery(typeQuery, {
+    skip: isSearching || Boolean(genQuery) || !typeQuery,
+  });
+
+  const defaultResult = useGetPokemonsQuery(
+    { limit, offset },
+    { skip: isSearching || Boolean(genQuery) || Boolean(typeQuery) },
+  );
+
+  const activeQuery = isSearching
+    ? searchResult
+    : genQuery
+      ? genResult
+      : typeQuery
+        ? typeResult
+        : defaultResult;
 
   const { data, isLoading, isFetching, error } = activeQuery;
 

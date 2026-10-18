@@ -169,7 +169,6 @@ export default function Detail() {
               aria-pressed={isFavorite}
             >
               <span>{isFavorite ? "❤️" : "🤍"}</span>
-              {isFavorite ? "En mi equipo" : "Agregar a mi equipo"}
             </TeamButton>
           </TopBar>
 

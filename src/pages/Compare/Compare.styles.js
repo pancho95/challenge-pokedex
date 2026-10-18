@@ -38,6 +38,11 @@ export const FormCard = styled.form`
 export const SelectorsGrid = styled.div`
   display: flex;
   justify-content: space-around;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 export const FormGroup = styled.div`
@@ -54,12 +59,16 @@ export const FormGroup = styled.div`
   input,
   select {
     width: 100%;
-    padding: 12px 15px;
+    padding: 12px 16px;
     border-radius: 12px;
     border: 1px solid ${(props) => (props.$hasError ? "#ef4444" : "#d1d5db")};
     font-size: 15px;
     outline: none;
     transition: border-color 0.2s;
+
+    @media (max-width: 768px) {
+      padding: 6px 8px;
+    }
 
     &:focus {
       border-color: ${(props) => (props.$hasError ? "#ef4444" : "#4caf50")};

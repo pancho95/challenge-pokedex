@@ -157,37 +157,6 @@ export default function Compare() {
     });
   };
 
-  const renderPokemonCard = (pokemon) => {
-    const isFavorite = team.some((p) => p.id === pokemon.id);
-
-    return (
-      <OverviewCard>
-        <img src={pokemon.sprite} alt={pokemon.name} />
-        <h3 style={{ textTransform: "capitalize" }}>{pokemon.name}</h3>
-        <p style={{ color: "#888", fontWeight: "bold", marginBottom: "16px" }}>
-          N.° {String(pokemon.id).padStart(3, "0")}
-        </p>
-        <button
-          onClick={() => handleToggleTeam(pokemon)}
-          style={{
-            width: "100%",
-            padding: "10px 16px",
-            borderRadius: "10px",
-            border: "none",
-            fontWeight: "700",
-            fontSize: "14px",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            backgroundColor: isFavorite ? "#ef4444" : "#4caf50",
-            color: "#ffffff",
-          }}
-        >
-          {isFavorite ? "Quitar de Mi Equipo" : "Agregar a Mi Equipo"}
-        </button>
-      </OverviewCard>
-    );
-  };
-
   return (
     <ComparePage>
       <HeaderSection>

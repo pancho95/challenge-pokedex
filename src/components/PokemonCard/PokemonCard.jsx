@@ -21,16 +21,24 @@ export default function PokemonCard({
   pokemonBasicName,
   pokemonSprite,
   pokemonTypes = [],
+  position,
+  draggable,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
+  isDragging,
+  style = {},
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
-
   const [toastInfo, setToastInfo] = useState(null);
-
-  if (!pokemonId) return null;
 
   const dispatch = useDispatch();
   const team = useSelector((state) => state.favorites.team);
+
   const isFavorite = team.some((p) => p.id === Number(pokemonId));
+
+  if (!pokemonId) return null;
 
   const handleToggleTeam = (e) => {
     e.preventDefault();
@@ -77,7 +85,19 @@ export default function PokemonCard({
           onClose={() => setToastInfo(null)}
         />
       )}
-      <CardWrapper>
+      <CardWrapper
+        draggable={draggable}
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
+        onDragEnd={onDragEnd}
+        style={{
+          ...style,
+          opacity: isDragging ? 0.4 : (style.opacity ?? 1),
+          border: isDragging ? "2px dashed #4caf50" : style.border,
+          cursor: draggable ? "grab" : "pointer",
+        }}
+      >
         <FavoriteButton
           onClick={handleToggleTeam}
           $isFavorite={isFavorite}
@@ -91,7 +111,10 @@ export default function PokemonCard({
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <CardLink>
-            <PokemonNumber>#{String(pokemonId).padStart(3, "0")}</PokemonNumber>
+            <PokemonNumber>
+              #{String(pokemonId).padStart(3, "0")}
+              {position !== undefined && ` (Pos. ${position})`}
+            </PokemonNumber>
 
             <ImageContainer $imageLoaded={imageLoaded}>
               {!imageLoaded && <Spinner />}

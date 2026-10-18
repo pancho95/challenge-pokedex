@@ -9,14 +9,9 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 import { baseApi } from "../services/baseApi";
 import pokemonReducer from "../features/pokemon/pokemonSlice";
-
-const storage = {
-  getItem: (key) => Promise.resolve(localStorage.getItem(key)),
-  setItem: (key, value) => Promise.resolve(localStorage.setItem(key, value)),
-  removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
-};
 
 const persistConfig = {
   key: "root",

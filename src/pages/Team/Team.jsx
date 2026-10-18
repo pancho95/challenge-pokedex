@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  removeFromTeam,
-  reorderTeam,
-} from "../../features/pokemon/pokemonSlice";
-import { TYPE_COLORS, TYPE_NAMES } from "../../utils/pokemonColors";
+import { reorderTeam } from "../../features/pokemon/pokemonSlice";
 import {
   TeamPage,
   HeaderSection,
@@ -13,14 +9,8 @@ import {
   EmptyState,
   PrimaryButton,
   TeamGrid,
-  TeamMemberCard,
-  RemoveButton,
-  MemberImage,
-  MemberName,
-  MemberNumber,
-  TypesContainer,
-  TypeBadge,
 } from "./Team.styles";
+import PokemonCard from "../../components/PokemonCard/PokemonCard";
 
 export default function MyTeam() {
   const dispatch = useDispatch();
@@ -28,10 +18,6 @@ export default function MyTeam() {
   const team = useSelector((state) => state.favorites.team);
 
   const [draggedId, setDraggedId] = useState(null);
-
-  const handleRemove = (id) => {
-    dispatch(removeFromTeam(id));
-  };
 
   const handleDragStart = (e, id) => {
     setDraggedId(id);
@@ -98,53 +84,20 @@ export default function MyTeam() {
       ) : (
         <TeamGrid>
           {team.map((pokemon, index) => (
-            <TeamMemberCard
+            <PokemonCard
               key={pokemon.id}
+              pokemonId={pokemon.id}
+              pokemonBasicName={pokemon.name}
+              pokemonSprite={pokemon.sprite}
+              pokemonTypes={pokemon.types}
+              position={index + 1}
               draggable
+              isDragging={draggedId === pokemon.id}
               onDragStart={(e) => handleDragStart(e, pokemon.id)}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, pokemon.id)}
               onDragEnd={handleDragEnd}
-              style={{
-                cursor: "grab",
-                opacity: draggedId === pokemon.id ? 0.4 : 1,
-                border:
-                  draggedId === pokemon.id ? "2px dashed #4caf50" : undefined,
-              }}
-            >
-              <RemoveButton
-                onClick={() => handleRemove(pokemon.id)}
-                title="Quitar del equipo"
-                aria-label="Quitar del equipo"
-              >
-                ✕
-              </RemoveButton>
-
-              <MemberImage
-                src={pokemon.sprite}
-                alt={pokemon.name}
-                onClick={() => navigate(`/pokemon/${pokemon.id}`)}
-              />
-
-              <MemberNumber>
-                N.° {String(pokemon.id).padStart(3, "0")} (Pos. {index + 1})
-              </MemberNumber>
-
-              <MemberName onClick={() => navigate(`/pokemon/${pokemon.id}`)}>
-                {pokemon.name}
-              </MemberName>
-
-              <TypesContainer>
-                {pokemon.types?.map((type) => (
-                  <TypeBadge
-                    key={type}
-                    $bgColor={TYPE_COLORS[type] || TYPE_COLORS.normal}
-                  >
-                    {TYPE_NAMES[type] || type}
-                  </TypeBadge>
-                ))}
-              </TypesContainer>
-            </TeamMemberCard>
+            />
           ))}
         </TeamGrid>
       )}

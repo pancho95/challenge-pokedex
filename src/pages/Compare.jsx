@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useGetPokemonsQuery } from "../services/pokemonListApi";
+import { addToTeam, removeFromTeam } from "../features/pokemon/pokemonSlice";
+import Toast from "../components/common/Toast";
 import {
   ComparePage,
   HeaderSection,
@@ -31,8 +34,12 @@ const STAT_LABELS = {
 };
 
 export default function Compare() {
+  const dispatch = useDispatch();
+  const team = useSelector((state) => state.favorites.team);
+
   const [comparedData, setComparedData] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [toastInfo, setToastInfo] = useState(null);
 
   const { data: pokemonList } = useGetPokemonsQuery({ limit: 1000, offset: 0 });
   const validNames =
@@ -62,7 +69,7 @@ export default function Compare() {
       pokemon2: "",
     },
     validationSchema: CompareSchema,
-    enableReinitialize: true, // Importante para reevaluar la validación cuando cargan los Pokémon
+    enableReinitialize: true,
     onSubmit: async (values) => {
       setIsLoadingDetails(true);
       try {
@@ -113,6 +120,72 @@ export default function Compare() {
   });
 
   const options = pokemonList?.results || [];
+
+  const handleToggleTeam = (pokemon) => {
+    const isFavorite = team.some((p) => p.id === pokemon.id);
+
+    if (isFavorite) {
+      dispatch(removeFromTeam(pokemon.id));
+      setToastInfo({
+        message: `${pokemon.name} ha sido eliminado de tu equipo.`,
+        type: "success",
+      });
+      return;
+    }
+
+    if (team.length >= 6) {
+      setToastInfo({
+        message:
+          "¡Tu equipo ya tiene 6 Pokémon! Debes liberar uno antes de agregar otro.",
+        type: "error",
+      });
+      return;
+    }
+
+    dispatch(
+      addToTeam({
+        id: pokemon.id,
+        name: pokemon.name,
+        sprite: pokemon.sprite,
+        types: pokemon.types,
+      }),
+    );
+    setToastInfo({
+      message: `¡${pokemon.name} se unió a tu equipo!`,
+      type: "success",
+    });
+  };
+
+  const renderPokemonCard = (pokemon) => {
+    const isFavorite = team.some((p) => p.id === pokemon.id);
+
+    return (
+      <OverviewCard>
+        <img src={pokemon.sprite} alt={pokemon.name} />
+        <h3 style={{ textTransform: "capitalize" }}>{pokemon.name}</h3>
+        <p style={{ color: "#888", fontWeight: "bold", marginBottom: "16px" }}>
+          N.° {String(pokemon.id).padStart(3, "0")}
+        </p>
+        <button
+          onClick={() => handleToggleTeam(pokemon)}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            borderRadius: "10px",
+            border: "none",
+            fontWeight: "700",
+            fontSize: "14px",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            backgroundColor: isFavorite ? "#ef4444" : "#4caf50",
+            color: "#ffffff",
+          }}
+        >
+          {isFavorite ? "Quitar de Mi Equipo" : "Agregar a Mi Equipo"}
+        </button>
+      </OverviewCard>
+    );
+  };
 
   return (
     <ComparePage>
@@ -197,21 +270,8 @@ export default function Compare() {
       {comparedData && !isLoadingDetails && (
         <ComparisonContainer>
           <PokemonOverviewGrid>
-            <OverviewCard>
-              <img src={comparedData.p1.sprite} alt={comparedData.p1.name} />
-              <h3>{comparedData.p1.name}</h3>
-              <p style={{ color: "#888", fontWeight: "bold" }}>
-                N.° {String(comparedData.p1.id).padStart(3, "0")}
-              </p>
-            </OverviewCard>
-
-            <OverviewCard>
-              <img src={comparedData.p2.sprite} alt={comparedData.p2.name} />
-              <h3>{comparedData.p2.name}</h3>
-              <p style={{ color: "#888", fontWeight: "bold" }}>
-                N.° {String(comparedData.p2.id).padStart(3, "0")}
-              </p>
-            </OverviewCard>
+            {renderPokemonCard(comparedData.p1)}
+            {renderPokemonCard(comparedData.p2)}
           </PokemonOverviewGrid>
 
           <div
@@ -261,6 +321,14 @@ export default function Compare() {
             })}
           </div>
         </ComparisonContainer>
+      )}
+
+      {toastInfo && (
+        <Toast
+          message={toastInfo.message}
+          type={toastInfo.type}
+          onClose={() => setToastInfo(null)}
+        />
       )}
     </ComparePage>
   );

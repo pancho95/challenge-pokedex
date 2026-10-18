@@ -44,10 +44,13 @@ import {
   StatusContainer,
   Loader,
 } from "./Detail.styles";
+import Toast from "../components/common/Toast";
 
 export default function Detail() {
   const { idPokemon, id } = useParams();
   const pokemonParam = idPokemon || id;
+
+  const [toastInfo, setToastInfo] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -105,174 +108,196 @@ export default function Detail() {
 
   const activeSprite = sprites[selectedSprite] || sprites.artwork;
 
-  const handleToggleTeam = () => {
+  const handleToggleTeam = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (isFavorite) {
-      dispatch(removeFromTeam(pokemonId));
+      dispatch(removeFromTeam(Number(pokemonId)));
+      setToastInfo({
+        message: `${pokemon.name} ha sido eliminado de tu equipo.`,
+        type: "success",
+      });
       return;
     }
 
     if (team.length >= 6) {
-      alert(
-        "¡Tu equipo ya tiene 6 Pokémon! Debes liberar uno antes de agregar otro.",
-      );
+      setToastInfo({
+        message:
+          "¡Tu equipo ya tiene 6 Pokémon! Debes liberar uno antes de agregar otro.",
+        type: "error",
+      });
       return;
     }
 
     dispatch(
       addToTeam({
-        id: pokemon.id,
+        id: Number(pokemonId),
         name: pokemon.name,
-        sprite: sprites.artwork,
-        types: pokemon.types.map((t) => t.type.name),
+        sprite: pokemon.sprite,
+        types: pokemon.types,
       }),
     );
+    setToastInfo({
+      message: `¡${pokemon.name} se unió a tu equipo!`,
+      type: "success",
+    });
   };
 
   return (
-    <DetailPage $accent={accent}>
-      <BackButton onClick={() => navigate(-1)} type="button">
-        <span aria-hidden="true">←</span> Volver al listado
-      </BackButton>
+    <>
+      {toastInfo && (
+        <Toast
+          message={toastInfo.message}
+          type={toastInfo.type}
+          onClose={() => setToastInfo(null)}
+        />
+      )}
+      <DetailPage $accent={accent}>
+        <BackButton onClick={() => navigate(-1)} type="button">
+          <span aria-hidden="true">←</span> Volver al listado
+        </BackButton>
 
-      <DetailCard>
-        <TopBar>
-          <PokemonNumber>#{String(pokemonId).padStart(3, "0")}</PokemonNumber>
+        <DetailCard>
+          <TopBar>
+            <PokemonNumber>#{String(pokemonId).padStart(3, "0")}</PokemonNumber>
 
-          <TeamButton
-            $isFavorite={isFavorite}
-            onClick={handleToggleTeam}
-            type="button"
-            aria-pressed={isFavorite}
-          >
-            <span>{isFavorite ? "❤️" : "🤍"}</span>
-            {isFavorite ? "En mi equipo" : "Agregar a mi equipo"}
-          </TeamButton>
-        </TopBar>
+            <TeamButton
+              $isFavorite={isFavorite}
+              onClick={handleToggleTeam}
+              type="button"
+              aria-pressed={isFavorite}
+            >
+              <span>{isFavorite ? "❤️" : "🤍"}</span>
+              {isFavorite ? "En mi equipo" : "Agregar a mi equipo"}
+            </TeamButton>
+          </TopBar>
 
-        <HeroSection>
-          <ImageStage>
-            {activeSprite ? (
-              <MainImage
-                src={activeSprite}
-                alt={`${pokemon.name} ${SPRITE_NAMES[selectedSprite] || ""}`}
-              />
-            ) : (
-              <p>Imagen no disponible</p>
-            )}
-          </ImageStage>
+          <HeroSection>
+            <ImageStage>
+              {activeSprite ? (
+                <MainImage
+                  src={activeSprite}
+                  alt={`${pokemon.name} ${SPRITE_NAMES[selectedSprite] || ""}`}
+                />
+              ) : (
+                <p>Imagen no disponible</p>
+              )}
+            </ImageStage>
 
-          <PokemonName>{pokemon.name}</PokemonName>
-          <PokemonSubtitle>
-            Pokémon #{String(pokemonId).padStart(3, "0")}
-          </PokemonSubtitle>
+            <PokemonName>{pokemon.name}</PokemonName>
+            <PokemonSubtitle>
+              Pokémon #{String(pokemonId).padStart(3, "0")}
+            </PokemonSubtitle>
 
-          <TypesContainer>
-            {pokemon.types.map(({ type }) => (
-              <TypeBadge
-                key={type.name}
-                $bgColor={TYPE_COLORS[type.name] || TYPE_COLORS.normal}
-              >
-                {TYPE_NAMES[type.name] || type.name}
-              </TypeBadge>
-            ))}
-          </TypesContainer>
-        </HeroSection>
-
-        {availableSprites.length > 1 && (
-          <Section>
-            <h2>Galería de sprites</h2>
-            <SpriteGallery>
-              {availableSprites.map(([key, url]) => (
-                <SpriteOption
-                  type="button"
-                  $isSelected={selectedSprite === key}
-                  key={key}
-                  onClick={() => setSelectedSprite(key)}
-                  aria-pressed={selectedSprite === key}
-                  title={SPRITE_NAMES[key]}
+            <TypesContainer>
+              {pokemon.types.map(({ type }) => (
+                <TypeBadge
+                  key={type.name}
+                  $bgColor={TYPE_COLORS[type.name] || TYPE_COLORS.normal}
                 >
-                  <img src={url} alt="" />
-                  <span>{SPRITE_NAMES[key]}</span>
-                </SpriteOption>
+                  {TYPE_NAMES[type.name] || type.name}
+                </TypeBadge>
               ))}
-            </SpriteGallery>
+            </TypesContainer>
+          </HeroSection>
+
+          {availableSprites.length > 1 && (
+            <Section>
+              <h2>Galería de sprites</h2>
+              <SpriteGallery>
+                {availableSprites.map(([key, url]) => (
+                  <SpriteOption
+                    type="button"
+                    $isSelected={selectedSprite === key}
+                    key={key}
+                    onClick={() => setSelectedSprite(key)}
+                    aria-pressed={selectedSprite === key}
+                    title={SPRITE_NAMES[key]}
+                  >
+                    <img src={url} alt="" />
+                    <span>{SPRITE_NAMES[key]}</span>
+                  </SpriteOption>
+                ))}
+              </SpriteGallery>
+            </Section>
+          )}
+
+          <PhysicalInfoGrid>
+            <PhysicalItem>
+              <InfoIcon>↕</InfoIcon>
+              <div>
+                <InfoLabel>Altura</InfoLabel>
+                <strong>{pokemon.height / 10} m</strong>
+              </div>
+            </PhysicalItem>
+
+            <PhysicalItem>
+              <InfoIcon>⚖</InfoIcon>
+              <div>
+                <InfoLabel>Peso</InfoLabel>
+                <strong>{pokemon.weight / 10} kg</strong>
+              </div>
+            </PhysicalItem>
+
+            <PhysicalItem>
+              <InfoIcon>✦</InfoIcon>
+              <div>
+                <InfoLabel>Experiencia base</InfoLabel>
+                <strong>{pokemon.base_experience ?? "—"} XP</strong>
+              </div>
+            </PhysicalItem>
+          </PhysicalInfoGrid>
+
+          <Section>
+            <h2>Habilidades</h2>
+            <AbilitiesList>
+              {pokemon.abilities.map(({ ability, is_hidden }) => (
+                <AbilityBadge key={ability.name}>
+                  {ability.name.replaceAll("-", " ")}
+                  {is_hidden && <HiddenBadge>Oculta</HiddenBadge>}
+                </AbilityBadge>
+              ))}
+            </AbilitiesList>
           </Section>
-        )}
 
-        <PhysicalInfoGrid>
-          <PhysicalItem>
-            <InfoIcon>↕</InfoIcon>
-            <div>
-              <InfoLabel>Altura</InfoLabel>
-              <strong>{pokemon.height / 10} m</strong>
-            </div>
-          </PhysicalItem>
+          <StatsSection>
+            <SectionHeading>
+              <div>
+                <h2>Estadísticas base</h2>
+                <p>Distribución de atributos del Pokémon</p>
+              </div>
+              <StatsTotal>
+                {pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0)}
+                <small> TOTAL</small>
+              </StatsTotal>
+            </SectionHeading>
 
-          <PhysicalItem>
-            <InfoIcon>⚖</InfoIcon>
-            <div>
-              <InfoLabel>Peso</InfoLabel>
-              <strong>{pokemon.weight / 10} kg</strong>
-            </div>
-          </PhysicalItem>
+            <StatsList>
+              {pokemon.stats.map(({ stat, base_stat }) => (
+                <StatRow key={stat.name}>
+                  <StatLabels>
+                    <span>{STAT_NAMES[stat.name] || stat.name}</span>
+                    <strong>{base_stat}</strong>
+                  </StatLabels>
 
-          <PhysicalItem>
-            <InfoIcon>✦</InfoIcon>
-            <div>
-              <InfoLabel>Experiencia base</InfoLabel>
-              <strong>{pokemon.base_experience ?? "—"} XP</strong>
-            </div>
-          </PhysicalItem>
-        </PhysicalInfoGrid>
-
-        <Section>
-          <h2>Habilidades</h2>
-          <AbilitiesList>
-            {pokemon.abilities.map(({ ability, is_hidden }) => (
-              <AbilityBadge key={ability.name}>
-                {ability.name.replaceAll("-", " ")}
-                {is_hidden && <HiddenBadge>Oculta</HiddenBadge>}
-              </AbilityBadge>
-            ))}
-          </AbilitiesList>
-        </Section>
-
-        <StatsSection>
-          <SectionHeading>
-            <div>
-              <h2>Estadísticas base</h2>
-              <p>Distribución de atributos del Pokémon</p>
-            </div>
-            <StatsTotal>
-              {pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0)}
-              <small> TOTAL</small>
-            </StatsTotal>
-          </SectionHeading>
-
-          <StatsList>
-            {pokemon.stats.map(({ stat, base_stat }) => (
-              <StatRow key={stat.name}>
-                <StatLabels>
-                  <span>{STAT_NAMES[stat.name] || stat.name}</span>
-                  <strong>{base_stat}</strong>
-                </StatLabels>
-
-                <StatTrack
-                  role="progressbar"
-                  aria-label={STAT_NAMES[stat.name] || stat.name}
-                  aria-valuenow={base_stat}
-                  aria-valuemin={0}
-                  aria-valuemax={255}
-                >
-                  <StatFill
-                    $fillPercentage={Math.min((base_stat / 255) * 100, 100)}
-                  />
-                </StatTrack>
-              </StatRow>
-            ))}
-          </StatsList>
-        </StatsSection>
-      </DetailCard>
-    </DetailPage>
+                  <StatTrack
+                    role="progressbar"
+                    aria-label={STAT_NAMES[stat.name] || stat.name}
+                    aria-valuenow={base_stat}
+                    aria-valuemin={0}
+                    aria-valuemax={255}
+                  >
+                    <StatFill
+                      $fillPercentage={Math.min((base_stat / 255) * 100, 100)}
+                    />
+                  </StatTrack>
+                </StatRow>
+              ))}
+            </StatsList>
+          </StatsSection>
+        </DetailCard>
+      </DetailPage>
+    </>
   );
 }

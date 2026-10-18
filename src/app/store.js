@@ -13,22 +13,16 @@ import { baseApi } from "../services/baseApi";
 import pokemonReducer from "../features/pokemon/pokemonSlice";
 
 const storage = {
-  getItem: (key) => {
-    return Promise.resolve(localStorage.getItem(key));
-  },
-  setItem: (key, value) => {
-    return Promise.resolve(localStorage.setItem(key, value));
-  },
-  removeItem: (key) => {
-    return Promise.resolve(localStorage.removeItem(key));
-  },
+  getItem: (key) => Promise.resolve(localStorage.getItem(key)),
+  setItem: (key, value) => Promise.resolve(localStorage.setItem(key, value)),
+  removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
 };
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  whitelist: ["favorites", baseApi.reducerPath],
+  whitelist: ["favorites"],
 };
 
 const rootReducer = combineReducers({

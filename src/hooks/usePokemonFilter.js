@@ -8,40 +8,44 @@ import {
 
 export function usePokemonFilter(offset, limit, setOffset) {
   const [searchParams] = useSearchParams();
-  const searchQuery = searchParams.get("search") || "";
+  const searchQuery = searchParams.get("search")?.toLowerCase().trim() || "";
   const typeQuery = searchParams.get("type") || "";
   const genQuery = searchParams.get("gen") || "";
 
   useEffect(() => {
     if (setOffset) setOffset(0);
-  }, [genQuery, typeQuery, setOffset]);
+  }, [genQuery, typeQuery, searchQuery, setOffset]);
 
-  const generalQuery = useGetPokemonsQuery(
-    { limit, offset },
-    { skip: Boolean(genQuery || typeQuery) },
-  );
-  const genQueryRes = useGetPokemonsByGenQuery(genQuery, { skip: !genQuery });
-  const typeQueryRes = useGetPokemonsByTypeQuery(typeQuery, {
-    skip: !typeQuery,
-  });
+  const isSearching = Boolean(searchQuery);
 
-  const activeData = genQuery
-    ? genQueryRes
-    : typeQuery
-      ? typeQueryRes
-      : generalQuery;
+  let activeQuery;
 
-  const { data, isLoading, isFetching, error } = activeData;
+  if (isSearching) {
+    activeQuery = useGetPokemonsQuery(
+      { limit: 1302, offset: 0 },
+      { skip: false },
+    );
+  } else if (genQuery) {
+    activeQuery = useGetPokemonsByGenQuery(genQuery, { skip: false });
+  } else if (typeQuery) {
+    activeQuery = useGetPokemonsByTypeQuery(typeQuery, { skip: false });
+  } else {
+    activeQuery = useGetPokemonsQuery({ limit, offset }, { skip: false });
+  }
+
+  const { data, isLoading, isFetching, error } = activeQuery;
 
   const filteredPokemons = data?.results?.filter((pokemon) => {
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const matchesName = pokemon.name.toLowerCase().includes(query);
-      const matchesId = String(pokemon.id).includes(query);
+      const pokemonId =
+        pokemon.id || pokemon.url.split("/").filter(Boolean).pop();
+
+      const matchesName = pokemon.name.toLowerCase().includes(searchQuery);
+      const matchesId = String(pokemonId).includes(searchQuery);
       if (!matchesName && !matchesId) return false;
     }
 
-    if (typeQuery && genQuery) {
+    if (typeQuery && !genQuery) {
       const matchesType = pokemon.types?.some(
         (t) => t.toLowerCase() === typeQuery.toLowerCase(),
       );
@@ -58,7 +62,7 @@ export function usePokemonFilter(offset, limit, setOffset) {
     isLoading,
     isFetching,
     error,
-    hasMore: data?.results?.length < (data?.count || 1302),
+    hasMore: !isSearching && data?.results?.length < (data?.count || 1302),
     isFiltered,
   };
 }

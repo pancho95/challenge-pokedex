@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "../components/common/Navbar";
+import Navbar from "../components/common/Navbar/Navbar";
 import Home from "../pages/Home/Home";
 import { Provider } from "react-redux";
 import { store } from "./store";

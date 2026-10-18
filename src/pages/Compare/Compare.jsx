@@ -23,6 +23,7 @@ import {
   SpinnerWrapper,
   PokeballIcon,
 } from "../../components/common/PokeballSpinner.styles";
+import PokemonCard from "../../components/PokemonCard/PokemonCard";
 
 const STAT_LABELS = {
   hp: "PS (HP)",
@@ -270,8 +271,20 @@ export default function Compare() {
       {comparedData && !isLoadingDetails && (
         <ComparisonContainer>
           <PokemonOverviewGrid>
-            {renderPokemonCard(comparedData.p1)}
-            {renderPokemonCard(comparedData.p2)}
+            <PokemonCard
+              key={comparedData.p1.id}
+              pokemonId={comparedData.p1.id}
+              pokemonBasicName={comparedData.p1.name}
+              pokemonSprite={comparedData.p1.sprite}
+              pokemonTypes={comparedData.p1.types}
+            />
+            <PokemonCard
+              key={comparedData.p2.id}
+              pokemonId={comparedData.p2.id}
+              pokemonBasicName={comparedData.p2.name}
+              pokemonSprite={comparedData.p2.sprite}
+              pokemonTypes={comparedData.p2.types}
+            />
           </PokemonOverviewGrid>
 
           <div

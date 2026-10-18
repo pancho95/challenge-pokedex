@@ -1,7 +1,7 @@
-import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { Link, NavLink } from "react-router-dom";
 
-const NavbarContainer = styled.nav`
+export const NavbarContainer = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,7 +18,7 @@ const NavbarContainer = styled.nav`
   }
 `;
 
-const Logo = styled(Link)`
+export const Logo = styled(Link)`
   color: #facc15;
   font-size: 1.5rem;
   font-weight: 800;
@@ -35,7 +35,7 @@ const Logo = styled(Link)`
   }
 `;
 
-const NavLinks = styled.div`
+export const NavLinks = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -46,7 +46,7 @@ const NavLinks = styled.div`
   }
 `;
 
-const StyledNavLink = styled(NavLink)`
+export const StyledNavLink = styled(NavLink)`
   color: #d1d5db;
   text-decoration: none;
   font-size: 0.95rem;
@@ -73,24 +73,26 @@ const StyledNavLink = styled(NavLink)`
   }
 `;
 
-function Navbar() {
-  return (
-    <NavbarContainer>
-      <Logo to="/">
-        ⚡ Poké<span>Dex</span>
-      </Logo>
+export const StatusBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: ${(props) =>
+    props.$isOnline ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)"};
+  color: ${(props) => (props.$isOnline ? "#22c55e" : "#ef4444")};
+  border: 1px solid
+    ${(props) =>
+      props.$isOnline ? "rgba(34, 197, 94, 0.3)" : "rgba(239, 68, 68, 0.3)"};
 
-      <NavLinks>
-        <StyledNavLink to="/" end>
-          🏠 Catálogo
-        </StyledNavLink>
-
-        <StyledNavLink to="/team">⭐ Mi Equipo</StyledNavLink>
-
-        <StyledNavLink to="/compare">⚔️ Comparar</StyledNavLink>
-      </NavLinks>
-    </NavbarContainer>
-  );
-}
-
-export default Navbar;
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: ${(props) => (props.$isOnline ? "#22c55e" : "#ef4444")};
+    box-shadow: 0 0 8px ${(props) => (props.$isOnline ? "#22c55e" : "#ef4444")};
+  }
+`;

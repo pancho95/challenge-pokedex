@@ -8,6 +8,7 @@ import {
 } from "../../components/common/PokeballSpinner.styles";
 import { usePokemonFilter } from "../../hooks/usePokemonFilter";
 import { HomePage } from "./Home.styles";
+import { SyncStatusIndicator } from "../../components/common/SyncStatusIndicator/SyncStatusIndicator.styles";
 
 export default function Home() {
   const [offset, setOffset] = useState(0);
@@ -73,6 +74,15 @@ export default function Home() {
       >
         Listado de Pokémon
       </h1>
+
+      <SyncStatusIndicator $isFetching={isFetching}>
+        <span className="pulse-dot" />
+        {isLoading
+          ? "Cargando..."
+          : isFetching
+            ? "Actualizando datos frescos..."
+            : "Datos desde caché (Instantáneo)"}
+      </SyncStatusIndicator>
 
       <SearchFilter />
       <PokemonGrid>

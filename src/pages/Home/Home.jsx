@@ -12,24 +12,22 @@ import { HomePage } from "./Home.styles";
 import { SyncStatusIndicator } from "../../components/common/SyncStatusIndicator/SyncStatusIndicator.styles";
 
 export default function Home() {
-  const [offset, setOffset] = useState(0);
   const limit = 40;
-
   const [visibleCount, setVisibleCount] = useState(40);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const { pokemons, isLoading, isFetching, error, hasMore, isFiltered } =
-    usePokemonFilter(offset, limit, setOffset);
+  const { pokemons, isLoading, isFetching, error, isFiltered } =
+    usePokemonFilter();
 
   useEffect(() => {
     setVisibleCount(40);
-  }, [isFiltered, pokemons?.length]);
+  }, [isFiltered]);
 
   const displayedPokemons = useMemo(() => {
     return pokemons?.slice(0, visibleCount) || [];
   }, [pokemons, visibleCount]);
 
-  const hasMoreLocal = displayedPokemons.length < (pokemons?.length || 0);
-  const canLoadMore = hasMoreLocal || (!isFiltered && hasMore);
+  const hasMore = displayedPokemons.length < (pokemons?.length || 0);
 
   const loadMoreRef = useRef(null);
 
@@ -39,15 +37,15 @@ export default function Home() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !isFetching) {
-          if (hasMoreLocal) {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
             setVisibleCount((prev) => prev + limit);
-          } else if (!isFiltered && hasMore) {
-            setOffset((prev) => prev + limit);
-          }
+            setIsLoadingMore(false);
+          }, 200);
         }
       },
-      { threshold: 0.1, rootMargin: "100px" },
+      { threshold: 0.1, rootMargin: "50px" },
     );
 
     observer.observe(currentRef);
@@ -55,10 +53,7 @@ export default function Home() {
     return () => {
       if (currentRef) observer.unobserve(currentRef);
     };
-  }, [hasMoreLocal, hasMore, isFetching, isFiltered, limit, setOffset]);
-
-  const isInitialFilterLoading =
-    isFetching && (!pokemons || pokemons?.length === 0 || isLoading);
+  }, [hasMore, limit, isLoadingMore]);
 
   return (
     <HomePage>
@@ -89,7 +84,7 @@ export default function Home() {
         </p>
       )}
 
-      {isInitialFilterLoading && !error ? (
+      {isLoading && !error ? (
         <PokemonGrid>
           {Array.from({ length: 12 }).map((_, index) => (
             <PokemonCardSkeleton key={`skeleton-${index}`} />
@@ -109,7 +104,7 @@ export default function Home() {
             ))}
           </PokemonGrid>
 
-          {pokemons?.length === 0 && !isFetching && !error && (
+          {pokemons?.length === 0 && !isLoading && !error && (
             <p style={{ textAlign: "center", padding: "40px", color: "#777" }}>
               No se encontraron Pokémon con los filtros especificados.
             </p>
@@ -118,14 +113,14 @@ export default function Home() {
       )}
 
       <div style={{ minHeight: "70px", margin: "24px 0", textAlign: "center" }}>
-        {isFetching && !isInitialFilterLoading && (
+        {hasMore && (
           <SpinnerWrapper>
             <PokeballIcon />
             <span>Cargando más Pokémon...</span>
           </SpinnerWrapper>
         )}
 
-        {!canLoadMore && pokemons?.length > 0 && !isFetching && (
+        {!hasMore && pokemons?.length > 0 && (
           <p style={{ color: "#888", margin: 0 }}>
             ¡Has visto todos los Pokémon!
           </p>

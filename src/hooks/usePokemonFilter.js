@@ -29,7 +29,7 @@ const matchesGeneration = (id, gen) => {
   return id >= range[0] && id <= range[1];
 };
 
-export function usePokemonFilter(offset, limit, setOffset) {
+export function usePokemonFilter(setOffset) {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search")?.toLowerCase().trim() || "";
   const typeQuery = searchParams.get("type")?.toLowerCase() || "";
@@ -52,23 +52,16 @@ export function usePokemonFilter(offset, limit, setOffset) {
     skip: hasType || !hasGen,
   });
 
-  const searchResult = useGetPokemonsQuery(
+  const allPokemonsResult = useGetPokemonsQuery(
     { limit: 1302, offset: 0 },
-    { skip: !isSearching || hasType || hasGen },
-  );
-
-  const defaultResult = useGetPokemonsQuery(
-    { limit, offset },
-    { skip: isFiltered },
+    { skip: hasType || hasGen },
   );
 
   const activeQuery = hasType
     ? typeResult
     : hasGen
       ? genResult
-      : isSearching
-        ? searchResult
-        : defaultResult;
+      : allPokemonsResult;
 
   const { data, isLoading, isFetching, error } = activeQuery;
 
@@ -89,11 +82,10 @@ export function usePokemonFilter(offset, limit, setOffset) {
   });
 
   return {
-    pokemons: isFiltered ? filteredPokemons : data?.results,
+    pokemons: filteredPokemons || data?.results,
     isLoading,
     isFetching,
     error,
-    hasMore: !isFiltered && data?.results?.length < (data?.count || 1302),
     isFiltered,
   };
 }

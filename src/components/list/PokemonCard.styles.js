@@ -14,7 +14,7 @@ export const FavoriteButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
-  background: ${(props) => (props.$isFavorite ? "#ff4d4d" : "#fff")};
+  background: ${(props) => (props.$isFavorite ? "#252936" : "#fff")};
   color: ${(props) => (props.$isFavorite ? "#fff" : "#333")};
   border: 1px solid #ccc;
   border-radius: 50%;

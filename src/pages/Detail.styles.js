@@ -97,11 +97,9 @@ export const TeamButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  border: 1px solid
-    ${(props) => (props.$isFavorite ? "var(--pokemon-color)" : "#d1d5db")};
+  border: 1px solid ${(props) => (props.$isFavorite ? "#252936" : "#d1d5db")};
   border-radius: 24px;
-  background: ${(props) =>
-    props.$isFavorite ? "var(--pokemon-color)" : "#fff"};
+  background: ${(props) => (props.$isFavorite ? "#252936" : "#fff")};
   color: ${(props) => (props.$isFavorite ? "#fff" : "#252936")};
   font-size: 13px;
   font-weight: 700;
@@ -109,12 +107,12 @@ export const TeamButton = styled.button`
   transition: 0.2s;
 
   &:hover {
-    border-color: var(--pokemon-color);
-    color: ${(props) => (props.$isFavorite ? "#fff" : "var(--pokemon-color)")};
+    border-color: #252936;
+    color: ${(props) => (props.$isFavorite ? "#fff" : "#252936")};
   }
 
   &:focus-visible {
-    outline: 3px solid var(--pokemon-color);
+    outline: 3px solid var(#252936);
     outline-offset: 3px;
   }
 

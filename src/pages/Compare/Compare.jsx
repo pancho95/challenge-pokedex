@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useGetPokemonsQuery } from "../../services/pokemonListApi";
+import { usePokemonFilter } from "../../hooks/usePokemonFilter";
 import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
 import Toast from "../../components/common/Toast/Toast";
 import {
@@ -38,9 +38,10 @@ export default function Compare() {
   const [activeQuery1, setActiveQuery1] = useState("");
   const [activeQuery2, setActiveQuery2] = useState("");
 
-  const { data: pokemonList } = useGetPokemonsQuery({ limit: 1000, offset: 0 });
-  const validNames =
-    pokemonList?.results?.map((p) => p.name.toLowerCase()) || [];
+  const { pokemons: pokemonList } = usePokemonFilter();
+
+  const options = pokemonList || [];
+  const validNames = options.map((p) => p.name.toLowerCase());
 
   const { data: res1, isFetching: loading1 } = useGetPokemonDetailQuery(
     activeQuery1,
@@ -89,8 +90,6 @@ export default function Compare() {
       setActiveQuery2(values.pokemon2.trim().toLowerCase());
     },
   });
-
-  const options = pokemonList?.results || [];
 
   const comparedData =
     res1 && res2

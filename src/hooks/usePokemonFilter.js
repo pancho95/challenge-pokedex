@@ -63,7 +63,7 @@ export function usePokemonFilter(setOffset) {
       ? genResult
       : allPokemonsResult;
 
-  const { data, isLoading, isFetching, error } = activeQuery;
+  const { data, isLoading, isFetching, error, refetch } = activeQuery;
 
   const filteredPokemons = data?.results?.filter((pokemon) => {
     const pokemonId = getPokemonId(pokemon);
@@ -87,5 +87,6 @@ export function usePokemonFilter(setOffset) {
     isFetching,
     error,
     isFiltered,
+    refetch,
   };
 }

@@ -16,7 +16,7 @@ export default function Home() {
   const [visibleCount, setVisibleCount] = useState(40);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const { pokemons, isLoading, isFetching, error, isFiltered } =
+  const { pokemons, isLoading, isFetching, error, isFiltered, refetch } =
     usePokemonFilter();
 
   useEffect(() => {
@@ -79,9 +79,26 @@ export default function Home() {
       <SearchFilter />
 
       {error && (
-        <p style={{ textAlign: "center", padding: "40px", color: "#ef4444" }}>
-          Hubo un error al cargar los datos. Por favor, intenta nuevamente.
-        </p>
+        <div style={{ textAlign: "center", padding: "40px" }}>
+          <p style={{ color: "#ef4444", marginBottom: "16px" }}>
+            Hubo un error al cargar los datos. Por favor, intenta nuevamente.
+          </p>
+          <button
+            onClick={() => refetch()}
+            type="button"
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#2563eb",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Reintentar conexión
+          </button>
+        </div>
       )}
 
       {isLoading && !error ? (

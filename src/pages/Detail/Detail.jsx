@@ -62,6 +62,7 @@ export default function Detail() {
     data: pokemon,
     isLoading,
     error,
+    refetch,
   } = useGetPokemonDetailQuery(pokemonParam, {
     skip: !pokemonParam,
   });
@@ -81,7 +82,24 @@ export default function Detail() {
         <BackButton $inStatus onClick={() => navigate(-1)}>
           ← Volver al listado
         </BackButton>
-        <p>No se pudo encontrar el Pokémon.</p>
+        <p style={{ margin: "16px 0", color: "#ef4444" }}>
+          No se pudo cargar la información del Pokémon.
+        </p>
+        <button
+          onClick={() => refetch()}
+          type="button"
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Reintentar
+        </button>
       </StatusContainer>
     );
   }
@@ -130,10 +148,14 @@ export default function Detail() {
       return;
     }
 
+    const defaultTeamSprite =
+      pokemon.sprites.other?.["official-artwork"]?.front_default ||
+      pokemon.sprites.front_default;
+
     const normalizedPokemonPayload = {
       id: Number(pokemonId),
       name: pokemon.name,
-      sprite: activeSprite,
+      sprite: defaultTeamSprite,
       types: pokemon.types.map((t) => t.type.name),
     };
 

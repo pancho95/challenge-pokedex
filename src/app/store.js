@@ -18,7 +18,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  whitelist: ["favorites"],
+  whitelist: ["favorites", baseApi.reducerPath],
 };
 
 const rootReducer = combineReducers({

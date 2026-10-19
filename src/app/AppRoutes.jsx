@@ -4,6 +4,7 @@ import Home from "../pages/Home/Home";
 import Detail from "../pages/Detail/Detail";
 import Team from "../pages/Team/Team";
 import Compare from "../pages/Compare/Compare";
+import NotFound from "../pages/NotFound/NotFound";
 
 export default function AppRoutes() {
   return (
@@ -19,14 +20,7 @@ export default function AppRoutes() {
         <Route path="/pokemon/:idPokemon" element={<Detail />} />
         <Route path="/team" element={<Team />} />
         <Route path="/compare" element={<Compare />} />
-        <Route
-          path="*"
-          element={
-            <div>
-              <h1>404 - Página no encontrada</h1>
-            </div>
-          }
-        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

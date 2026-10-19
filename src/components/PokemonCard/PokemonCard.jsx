@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
 import { addToTeam, removeFromTeam } from "../../features/pokemon/pokemonSlice";
 import { TYPE_COLORS, TYPE_NAMES } from "../../utils/pokemonColors";
@@ -36,6 +36,7 @@ export default function PokemonCard({
   const [toastInfo, setToastInfo] = useState(null);
 
   const dispatch = useDispatch();
+  const location = useLocation();
   const team = useSelector((state) => state.favorites.team);
 
   const { data: detail } = useGetPokemonDetailQuery(pokemonId, {
@@ -118,6 +119,7 @@ export default function PokemonCard({
 
         <Link
           to={`/pokemon/${pokemonId}`}
+          state={{ from: location.pathname }}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <CardLink>

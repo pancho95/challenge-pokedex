@@ -10,11 +10,15 @@ import {
 import { usePokemonFilter } from "../../hooks/usePokemonFilter";
 import { HomePage } from "./Home.styles";
 import { SyncStatusIndicator } from "../../components/common/SyncStatusIndicator/SyncStatusIndicator.styles";
+import { useSearchParams } from "react-router-dom";
+import EmptyState from "../../components/common/EmptyState/EmptyState";
 
 export default function Home() {
   const limit = 40;
   const [visibleCount, setVisibleCount] = useState(40);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const [, setSearchParams] = useSearchParams();
 
   const { pokemons, isLoading, isFetching, error, isFiltered, refetch } =
     usePokemonFilter();
@@ -122,9 +126,12 @@ export default function Home() {
           </PokemonGrid>
 
           {pokemons?.length === 0 && !isLoading && !error && (
-            <p style={{ textAlign: "center", padding: "40px", color: "#777" }}>
-              No se encontraron Pokémon con los filtros especificados.
-            </p>
+            <EmptyState
+              title="Sin resultados"
+              description="No encontramos Pokémon con esos filtros. Probá con otro nombre, tipo o generación."
+              actionLabel="Limpiar filtros"
+              onAction={() => setSearchParams({}, { replace: true })}
+            />
           )}
         </>
       )}

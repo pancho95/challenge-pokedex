@@ -9,11 +9,19 @@ export const pokemonDetailApi = baseApi.injectEndpoints({
         { type: "Pokemon", id: nameOrId },
       ],
       transformResponse: (response) => {
+        const { sprites } = response;
         return {
           id: response.id,
           name: response.name,
           types: response.types,
-          sprites: response.sprites,
+          sprites: {
+            officialArtwork:
+              sprites.other?.["official-artwork"]?.front_default ?? null,
+            front: sprites.front_default ?? null,
+            back: sprites.back_default ?? null,
+            frontShiny: sprites.front_shiny ?? null,
+            backShiny: sprites.back_shiny ?? null,
+          },
           stats: response.stats,
           abilities: response.abilities,
           height: response.height,

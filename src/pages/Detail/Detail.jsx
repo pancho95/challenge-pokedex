@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
 import { addToTeam, removeFromTeam } from "../../features/pokemon/pokemonSlice";
@@ -42,9 +42,10 @@ import {
   StatTrack,
   StatFill,
   StatusContainer,
-  Loader,
 } from "./Detail.styles";
 import Toast from "../../components/common/Toast/Toast";
+import DetailSkeleton from "./DetailSkeleton";
+import EmptyState from "../../components/common/EmptyState/EmptyState";
 
 export default function Detail() {
   const { idPokemon, id } = useParams();
@@ -52,8 +53,22 @@ export default function Detail() {
 
   const [toastInfo, setToastInfo] = useState(null);
 
+  const BACK_LABELS = {
+    "/compare": "Volver a Comparar",
+    "/team": "Volver a Mi Equipo",
+  };
+
+  const location = useLocation();
+
+  const from = location.state?.from;
+
+  const backLabel = BACK_LABELS[from] || "Volver al listado";
+
+  const handleBack = () => (from ? navigate(-1) : navigate("/"));
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const team = useSelector((state) => state.favorites.team);
 
   const [selectedSprite, setSelectedSprite] = useState("artwork");
@@ -67,20 +82,26 @@ export default function Detail() {
     skip: !pokemonParam,
   });
 
-  if (!pokemonParam || isLoading) {
+  if (!pokemonParam || isLoading) return <DetailSkeleton />;
+
+  if (error?.status === 404) {
     return (
-      <StatusContainer>
-        <Loader />
-        Cargando detalles del Pokémon...
-      </StatusContainer>
+      <div style={{ padding: "48px 16px" }}>
+        <EmptyState
+          title="Pokémon no encontrado"
+          description={`No existe ningún Pokémon con el nombre o número "${pokemonParam}".`}
+          actionLabel="Volver al catálogo"
+          onAction={() => navigate("/")}
+        />
+      </div>
     );
   }
 
   if (error || !pokemon) {
     return (
       <StatusContainer>
-        <BackButton $inStatus onClick={() => navigate(-1)}>
-          ← Volver al listado
+        <BackButton $inStatus onClick={handleBack}>
+          ← {backLabel}
         </BackButton>
         <p style={{ margin: "16px 0", color: "#ef4444" }}>
           No se pudo cargar la información del Pokémon.
@@ -177,8 +198,8 @@ export default function Detail() {
         />
       )}
       <DetailPage $accent={accent}>
-        <BackButton onClick={() => navigate(-1)} type="button">
-          <span aria-hidden="true">←</span> Volver al listado
+        <BackButton onClick={handleBack} type="button">
+          <span aria-hidden="true">←</span> {backLabel}
         </BackButton>
 
         <DetailCard>

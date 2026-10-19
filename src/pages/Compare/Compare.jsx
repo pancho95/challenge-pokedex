@@ -3,7 +3,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { usePokemonFilter } from "../../hooks/usePokemonFilter";
 import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
-import Toast from "../../components/common/Toast/Toast";
 import {
   ComparePage,
   HeaderSection,
@@ -33,8 +32,6 @@ const STAT_LABELS = {
 };
 
 export default function Compare() {
-  const [toastInfo, setToastInfo] = useState(null);
-
   const [activeQuery1, setActiveQuery1] = useState("");
   const [activeQuery2, setActiveQuery2] = useState("");
 
@@ -267,14 +264,6 @@ export default function Compare() {
             })}
           </div>
         </ComparisonContainer>
-      )}
-
-      {toastInfo && (
-        <Toast
-          message={toastInfo.message}
-          type={toastInfo.type}
-          onClose={() => setToastInfo(null)}
-        />
       )}
     </ComparePage>
   );

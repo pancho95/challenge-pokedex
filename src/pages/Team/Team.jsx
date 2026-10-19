@@ -2,14 +2,8 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { reorderTeam } from "../../features/pokemon/pokemonSlice";
-import {
-  TeamPage,
-  HeaderSection,
-  TeamCounter,
-  EmptyState,
-  PrimaryButton,
-  TeamGrid,
-} from "./Team.styles";
+import { TeamPage, HeaderSection, TeamCounter, TeamGrid } from "./Team.styles";
+import EmptyState from "../../components/common/EmptyState/EmptyState";
 import PokemonCard from "../../components/PokemonCard/PokemonCard";
 
 export default function MyTeam() {
@@ -67,20 +61,12 @@ export default function MyTeam() {
       </HeaderSection>
 
       {team.length === 0 ? (
-        <EmptyState>
-          <img
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
-            alt="Pokébola vacía"
-          />
-          <h2>Tu equipo está vacío</h2>
-          <p>
-            Explora el catálogo general y agrega hasta 6 Pokémon favoritos a tu
-            alineación.
-          </p>
-          <PrimaryButton onClick={() => navigate("/")}>
-            Ir al Catálogo
-          </PrimaryButton>
-        </EmptyState>
+        <EmptyState
+          title="Tu equipo está vacío"
+          description="Explora el catálogo general y agrega hasta 6 Pokémon favoritos a tu alineación."
+          actionLabel="Ir al Catálogo"
+          onAction={() => navigate("/")}
+        />
       ) : (
         <TeamGrid>
           {team.map((pokemon, index) => (

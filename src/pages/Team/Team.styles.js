@@ -40,35 +40,6 @@ export const TeamCounter = styled.span`
   font-size: 14px;
 `;
 
-export const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 15px 20px;
-  text-align: center;
-
-  img {
-    width: 120px;
-    height: 120px;
-    opacity: 0.6;
-    filter: grayscale(40%);
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 22px;
-    color: #343a48;
-  }
-
-  p {
-    margin: 0;
-    color: #777e8d;
-    max-width: 400px;
-  }
-`;
-
 export const PrimaryButton = styled.button`
   display: inline-flex;
   align-items: center;

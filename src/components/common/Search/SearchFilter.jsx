@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { TYPE_COLORS } from "../../../utils/pokemonColors";
+import { TYPE_NAMES } from "../../../utils/pokemonColors";
 import { GENERATIONS } from "../../../utils/pokemonGenerations";
 import {
   FilterContainer,
@@ -96,9 +96,9 @@ export default function SearchFilter() {
           onChange={handleTypeChange}
         >
           <OptionFilter value="">Todos los tipos</OptionFilter>
-          {Object.keys(TYPE_COLORS).map((type) => (
+          {Object.keys(TYPE_NAMES).map((type) => (
             <OptionFilter key={type} value={type}>
-              {type.toUpperCase()}
+              {TYPE_NAMES[type] ?? type}
             </OptionFilter>
           ))}
         </Select>

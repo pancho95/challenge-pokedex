@@ -2,8 +2,8 @@
 
 Aplicación Pokédex construida sobre [PokeAPI](https://pokeapi.co) como solución al Challenge Técnico de Desarrollador React. Permite explorar el catálogo completo, buscar y filtrar, ver el detalle de cada Pokémon, armar un equipo de hasta 6 integrantes y comparar estadísticas entre dos Pokémon, con **caché persistente** que permite seguir navegando datos ya consultados aun sin conexión.
 
-- **Repositorio:** `<URL-DEL-REPOSITORIO>`
-- **Demo:** `<URL-DE-LA-DEMO>` _(opcional)_
+- **Repositorio:** `https://github.com/pancho95/challenge-pokedex`
+- **Demo:** `<URL-DE-LA-DEMO>`
 
 ---
 
@@ -46,7 +46,7 @@ Aplicación Pokédex construida sobre [PokeAPI](https://pokeapi.co) como soluci�
 
 ```bash
 # 1. Clonar el repositorio
-git clone <URL-DEL-REPOSITORIO>
+git clone https://github.com/pancho95/challenge-pokedex.git
 cd pokedex-challenge
 
 # 2. Instalar dependencias
@@ -83,6 +83,7 @@ La aplicación queda disponible en **http://localhost:5173**.
 | `npm run build`   | Build de producción en `dist/`          |
 | `npm run preview` | Sirve localmente el build de producción |
 | `npm run lint`    | Ejecuta ESLint sobre el proyecto        |
+| `npm run test`    | Ejecuta los Tests del proyecto          |
 
 ---
 
@@ -249,7 +250,6 @@ Barras de estadísticas con `role="progressbar"`, `aria-pressed` en botones de a
 
 Mejoras identificadas, ordenadas por prioridad:
 
-
 **Experiencia de usuario**
 
 1. **Mejorar la interfaz del comparador** (jerarquía visual, selector con búsqueda más rico como `react-select`) y sumar un **gráfico radar** (`recharts`) para la comparación.
@@ -258,5 +258,4 @@ Mejoras identificadas, ordenadas por prioridad:
 
 **Calidad y mantenimiento**
 
-4. **Testing** con Vitest + React Testing Library: slice de favoritos (límite de 6, duplicados), hook de filtros, esquema Yup y flujos principales.
-5. Extraer un componente reutilizable para los estados de error con reintento (hoy el botón se repite con estilos en línea en Home y Detail) y un componente de estado vacío.
+4. Extraer un componente reutilizable para los estados de error con reintento (hoy el botón se repite con estilos en línea en Home y Detail) y un componente de estado vacío.

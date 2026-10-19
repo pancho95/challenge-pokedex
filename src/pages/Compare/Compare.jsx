@@ -21,6 +21,7 @@ import {
   PokeballIcon,
 } from "../../components/common/PokeballSpinner.styles";
 import PokemonCard from "../../components/PokemonCard/PokemonCard";
+import { createCompareSchema } from "../../utils/compareSchema";
 
 const STAT_LABELS = {
   hp: "PS (HP)",
@@ -57,23 +58,7 @@ export default function Compare() {
   const isLoadingDetails =
     (Boolean(activeQuery1) && loading1) || (Boolean(activeQuery2) && loading2);
 
-  const CompareSchema = Yup.object().shape({
-    pokemon1: Yup.string()
-      .required("Debes seleccionar el primer Pokémon")
-      .test(
-        "is-valid-pokemon",
-        "Selecciona un Pokémon válido de la lista",
-        (val) => validNames.includes(val?.trim().toLowerCase()),
-      ),
-    pokemon2: Yup.string()
-      .required("Debes seleccionar el segundo Pokémon")
-      .test(
-        "is-valid-pokemon",
-        "Selecciona un Pokémon válido de la lista",
-        (val) => validNames.includes(val?.trim().toLowerCase()),
-      )
-      .notOneOf([Yup.ref("pokemon1")], "No puedes comparar el mismo Pokémon"),
-  });
+  const CompareSchema = createCompareSchema(validNames);
 
   const formik = useFormik({
     initialValues: {
@@ -88,35 +73,25 @@ export default function Compare() {
     },
   });
 
+  const toCompareData = (res) => ({
+    id: res.id,
+    name: res.name,
+    sprite:
+      res.sprites.officialArtwork ??
+      res.sprites.front ??
+      // formato viejo, por si quedan datos persistidos antes del cambio
+      res.sprites.other?.["official-artwork"]?.front_default ??
+      res.sprites.front_default ??
+      null,
+    types: res.types.map((t) => t.type.name),
+    stats: res.stats.reduce(
+      (acc, s) => ({ ...acc, [s.stat.name]: s.base_stat }),
+      {},
+    ),
+  });
+
   const comparedData =
-    res1 && res2
-      ? {
-          p1: {
-            id: res1.id,
-            name: res1.name,
-            sprite:
-              res1.sprites.other?.["official-artwork"]?.front_default ||
-              res1.sprites.front_default,
-            types: res1.types.map((t) => t.type.name),
-            stats: res1.stats.reduce(
-              (acc, s) => ({ ...acc, [s.stat.name]: s.base_stat }),
-              {},
-            ),
-          },
-          p2: {
-            id: res2.id,
-            name: res2.name,
-            sprite:
-              res2.sprites.other?.["official-artwork"]?.front_default ||
-              res2.sprites.front_default,
-            types: res2.types.map((t) => t.type.name),
-            stats: res2.stats.reduce(
-              (acc, s) => ({ ...acc, [s.stat.name]: s.base_stat }),
-              {},
-            ),
-          },
-        }
-      : null;
+    res1 && res2 ? { p1: toCompareData(res1), p2: toCompareData(res2) } : null;
 
   return (
     <ComparePage>

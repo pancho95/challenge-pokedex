@@ -3,7 +3,7 @@
 Aplicación Pokédex construida sobre [PokeAPI](https://pokeapi.co) como solución al Challenge Técnico de Desarrollador React. Permite explorar el catálogo completo, buscar y filtrar, ver el detalle de cada Pokémon, armar un equipo de hasta 6 integrantes y comparar estadísticas entre dos Pokémon, con **caché persistente** que permite seguir navegando datos ya consultados aun sin conexión.
 
 - **Repositorio:** `https://github.com/pancho95/challenge-pokedex`
-- **Demo:** `<URL-DE-LA-DEMO>`
+- **Demo:** `https://challenge-pokedex.vercel.app/`
 
 ---
 

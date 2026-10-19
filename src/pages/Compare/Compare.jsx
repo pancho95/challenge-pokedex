@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { usePokemonFilter } from "../../hooks/usePokemonFilter";
 import { useGetPokemonDetailQuery } from "../../services/pokemonDetailApi";
 import {

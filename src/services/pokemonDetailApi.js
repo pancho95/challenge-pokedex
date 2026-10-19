@@ -5,7 +5,7 @@ export const pokemonDetailApi = baseApi.injectEndpoints({
     getPokemonDetail: builder.query({
       query: (nameOrId) => `pokemon/${nameOrId}`,
       keepUnusedDataFor: 60,
-      providesTags: (result, error, nameOrId) => [
+      providesTags: (_result, _error, nameOrId) => [
         { type: "Pokemon", id: nameOrId },
       ],
       transformResponse: (response) => {

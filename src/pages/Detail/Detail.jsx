@@ -9,6 +9,7 @@ import {
   STAT_NAMES,
   SPRITE_NAMES,
 } from "../../utils/pokemonColors";
+import { getSprites } from "../../utils/pokemonSprites";
 import {
   DetailPage,
   BackButton,
@@ -131,15 +132,7 @@ export default function Detail() {
   const primaryType = pokemon.types?.[0]?.type?.name || "normal";
   const accent = TYPE_COLORS[primaryType] || TYPE_COLORS.normal;
 
-  const sprites = {
-    artwork:
-      pokemon.sprites.other?.["official-artwork"]?.front_default ||
-      pokemon.sprites.front_default,
-    front: pokemon.sprites.front_default,
-    back: pokemon.sprites.back_default,
-    shiny: pokemon.sprites.front_shiny,
-    shinyBack: pokemon.sprites.back_shiny,
-  };
+  const sprites = getSprites(pokemon.sprites);
 
   const availableSprites = Object.entries(sprites).filter(([, url]) =>
     Boolean(url),
@@ -169,9 +162,7 @@ export default function Detail() {
       return;
     }
 
-    const defaultTeamSprite =
-      pokemon.sprites.other?.["official-artwork"]?.front_default ||
-      pokemon.sprites.front_default;
+    const defaultTeamSprite = sprites.artwork;
 
     const normalizedPokemonPayload = {
       id: Number(pokemonId),
